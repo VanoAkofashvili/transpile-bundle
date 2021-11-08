@@ -13,32 +13,27 @@ export const unpkgPathPlugin = (inputCode: string) => {
     // this build argument represents the bundling process
     setup(build: esbuild.PluginBuild) {
       // process of figuring out where the file is stored is onResolve
-
-      // Handle root entry file of "index.js"
-      build.onResolve({ filter: /(^index\.js$)/ }, () => {
-        return {
-          path: 'index.js',
-          namespace: 'a',
-        };
-      });
-
-      // Handle relative paths in a module
-      build.onResolve({ filter: /^\.+\// }, async (args: any) => {
-        return {
-          namespace: 'a',
-          path: new URL(args.path, 'https://unpkg.com' + args.resolveDir + '/')
-            .href,
-        };
-      });
-
-      // Handle main file of a module
       build.onResolve({ filter: /.*/ }, async (args: any) => {
+        console.log('onResole', args);
+        if (args.path === 'index.js') {
+          return { path: args.path, namespace: 'a' };
+        }
+
+        if (args.path.includes('./') || args.path.includes('../')) {
+          return {
+            namespace: 'a',
+            path: new URL(
+              args.path,
+              'https://unpkg.com' + args.resolveDir + '/'
+            ).href,
+          };
+        }
+
         return {
           namespace: 'a',
           path: `https://unpkg.com/${args.path}`,
         };
       });
-
       // attempt to load a file
       build.onLoad({ filter: /.*/ }, async (args: any) => {
         console.log('onLoad', args);
