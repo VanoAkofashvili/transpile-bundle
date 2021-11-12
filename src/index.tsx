@@ -68,7 +68,7 @@ const App = () => {
       </body>
     </html>
   `;
-
+  //
   return (
     <div>
       <textarea
@@ -89,5 +89,3 @@ const App = () => {
 };
 
 ReactDOM.render(<App />, document.querySelector('#root'));
-
-
